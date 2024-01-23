@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  COMPANY
+  ADMIN
+}
+
+enum LanguageLevel {
+  BASIC
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum Networks {
+  INSTAGRAM
+  FACEBOOK
+  YOUTUBE
+  LINKEDIN
+  OTHERS
+}
+
+model User {
+  id             String       @id @default(uuid())
+  email          String       @unique
+  password       String
+  firstName      String
+  lastName       String
+  birthdate      DateTime?
+  phone          String?
+  location       String?
+  identification String?
+  profilePicture String?
+  aboutMe        String?
+  education      Education[]
+  experience     Experience[]
+  languages      Language[]
+  socials        Social[]
+  Hobbies        Hobbies[]
+  role           Role         @default(USER)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Education {
+  id         String    @id @default(uuid())
+  schoolName String
+  degree     String
+  startDate  DateTime
+  endDate    DateTime?
+  person     User      @relation(fields: [personId], references: [id])
+  personId   String
+}
+
+model Experience {
+  id               String    @id @default(uuid())
+  jobTitle         String
+  location         String
+  employer         String
+  startDate        DateTime
+  endDate          DateTime?
+  responsibilities String
+  person           User      @relation(fields: [personId], references: [id])
+  personId         String
+}
+
+model Language {
+  id       String        @id @default(uuid())
+  name     String
+  level    LanguageLevel @default(BASIC)
+  person   User          @relation(fields: [personId], references: [id])
+  personId String
+}
+
+model Social {
+  id       String   @id @default(uuid())
+  name     Networks
+  link     String
+  person   User     @relation(fields: [personId], references: [id])
+  personId String
+}
+
+model Hobbies {
+  id       String @id @default(uuid())
+  hobby    String
+  person   User   @relation(fields: [personId], references: [id])
+  personId String
+}
